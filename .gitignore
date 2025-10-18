@@ -19,7 +19,7 @@ trace.zip
 # Session / cookies / LinkedIn auth state
 linkedin_state.json
 *.storageState.json
-
+data/
 # Logs
 *.log
 logs/

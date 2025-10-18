@@ -1,0 +1,15 @@
+version: '3.9'
+
+services:
+  playwright-server:
+    build: .
+    container_name: playwright-server
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    volumes:
+      # Persist session and state data (e.g. cookies)
+      - ./data:/app/data
+    restart: unless-stopped
