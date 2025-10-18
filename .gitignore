@@ -1,0 +1,39 @@
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Playwright browser binaries and caches
+.playwright/
+.ms-playwright/
+user-data-dir/
+test-results/
+playwright-report/
+trace.zip
+
+# Session / cookies / LinkedIn auth state
+linkedin_state.json
+*.storageState.json
+
+# Logs
+*.log
+logs/
+*.pid
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Optional build output
+dist/
+build/
+coverage/
+
+# VSCode / IDE files
+.vscode/
+.idea/
