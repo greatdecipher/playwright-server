@@ -120,27 +120,59 @@ export async function getAppliedJobs(options = {}) {
         console.log('🌐 Filtered to Applied Jobs');
         await page.waitForLoadState('domcontentloaded');
         await randomDelay();
-        const timeLine = '3w'; // ago
+        
+        const timeLine = options.timeline || '3w'; // ago
         const appliedElements = await getAllElementJobCard(page, timeLine);
         console.log(`🔍 Found ${appliedElements.length} applied job(s)`);
+        
+        // Array to collect all job data
+        const allJobsData = [];
+        
         // Filter and click only those containing '{n}' (weeks)
-        for (const element of appliedElements) {
+        for (let i = 0; i < appliedElements.length; i++) {
+            const element = appliedElements[i];
             const text = await element.textContent();
+            
             if (text.includes(timeLine)) {
-                await element.isVisible();
-                // check visibility for now
-                console.log("Visible applied job element:", text);
-                await element.click();
-                await randomDelay(2000, 4000);
-                // Get the data now
-                const jobData = await getJobData(page);
-                console.log("Job data:", jobData);
-                // Go back to previous page
-                await page.goBack();
-                await randomDelay(1000, 2000);
-                continue;
+                try {
+                    await element.isVisible();
+                    console.log(`📋 Processing job ${i + 1}/${appliedElements.length}: ${text.trim()}`);
+                    
+                    await element.click();
+                    await randomDelay(2000, 4000);
+                    
+                    // Get the job data
+                    const jobData = await getJobData(page);
+                    
+                    // Add metadata
+                    const jobEntry = {
+                        index: i + 1,
+                        appliedDate: text.trim(),
+                        ...jobData,
+                        scrapedAt: new Date().toISOString()
+                    };
+                    
+                    allJobsData.push(jobEntry);
+                    console.log(`✅ Successfully scraped job ${i + 1}`);
+                    
+                    // Go back to previous page
+                    await page.goBack();
+                    await randomDelay(1000, 2000);
+                } catch (error) {
+                    console.error(`❌ Error processing job ${i + 1}:`, error.message);
+                    // Continue with next job even if one fails
+                    allJobsData.push({
+                        index: i + 1,
+                        appliedDate: text.trim(),
+                        error: error.message,
+                        scrapedAt: new Date().toISOString()
+                    });
+                }
             }
         }
+        
+        console.log(`🎉 Scraping complete! Collected ${allJobsData.length} job(s)`);
+        return allJobsData;
 
     } catch (error) {
         console.error('Error during scraping:', error);

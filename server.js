@@ -31,11 +31,20 @@ app.get("/", (req, res) => {
 // Playwright automation endpoint
 app.get('/applied', async (req, res) => {
   try {
-    console.log('Starting LinkedIn automation...');
-    await getAppliedJobs();
+    const { timeline } = req.query; // Optional: ?timeline=2w
+    
+    console.log(`Starting LinkedIn scraping... (timeline: ${timeline || 'default'})`);
+    
+    const jobsData = await getAppliedJobs({ 
+      headless: true,
+      timeline 
+    });
+    
     res.status(200).json({ 
       status: 'success',
-      message: 'Playwright script executed successfully'
+      message: 'Scraping completed successfully',
+      count: jobsData.length,
+      data: jobsData
     });
   } catch (error) {
     console.error('Automation failed:', error);
