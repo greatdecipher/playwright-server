@@ -8,21 +8,14 @@ app.use(express.json());
 
 // Logging middleware to track requests
 app.use((req, res, next) => {
-  const oldSend = res.send;
   const oldJson = res.json;
-  
-  // Capture response data
-  res.send = function(data) {
-    console.log(`[${new Date().toISOString()}] Response:`, data);
-    return oldSend.apply(res, arguments);
-  };
-  
-  res.json = function(data) {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+
+  res.json = function (data) {
     console.log(`[${new Date().toISOString()}] Response:`, JSON.stringify(data));
     return oldJson.apply(res, arguments);
   };
 
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
   next();
 });
 
