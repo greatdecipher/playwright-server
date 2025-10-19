@@ -53,6 +53,25 @@ app.get('/applied', async (req, res) => {
   }
 });
 
+// ✅ Catch-all for unknown routes (404 handler)
+app.use((req, res) => {
+  console.warn(`[${new Date().toISOString()}] Unknown route: ${req.originalUrl}`);
+  res.status(404).json({
+    status: "error",
+    message: `Route not found: ${req.originalUrl}`,
+  });
+});
+
+// ✅ Global error handler for unexpected exceptions
+app.use((err, req, res, next) => {
+  console.error(`[${new Date().toISOString()}] Uncaught error:`, err);
+  res.status(500).json({
+    status: "error",
+    message: "Internal Server Error",
+    details: err.message,
+  });
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>
   console.log(`🚀 Playwright server running on port ${PORT}`)
