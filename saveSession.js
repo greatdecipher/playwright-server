@@ -1,7 +1,10 @@
 import { chromium } from "playwright";
 
 (async () => {
-  const browser = await chromium.launch({ headless: true }); // visible browser
+  // Default to headed mode for manual login, but allow headless via env variable
+  const headless = process.env.HEADLESS === 'true';
+  
+  const browser = await chromium.launch({ headless }); // visible browser for manual login
   const context = await browser.newContext();
   const page = await context.newPage();
 
