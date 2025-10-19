@@ -48,5 +48,3 @@ export async function getAppliedJobs() {
         await browser.close();
     }
 }
-
-getAppliedJobs().catch(console.error);
