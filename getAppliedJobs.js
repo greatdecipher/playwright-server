@@ -11,6 +11,42 @@ const __dirname = dirname(__filename);
 
 const MAX_LOGIN_ATTEMPTS = 3;
 
+export async function getAllElementJobCard(page, timeLine) {
+    const appliedElements = await page.getByText(`Applied ${timeLine} ago`).all();
+    return appliedElements;
+}
+
+export async function getJobData(page) {
+    try {
+        // Wait for and locate the expandable text box
+        await page.waitForSelector('span[data-testid="expandable-text-box"]', { timeout: 10000 });
+        
+        // Click "… more" button if present to expand full content
+        const moreButton = page.locator('button[data-testid="expandable-text-button"]');
+        if (await moreButton.count() > 0) {
+            await moreButton.first().click();
+            await randomDelay(1000, 2000);
+        }
+        
+        // Get the expandable text box element
+        const jobDescriptionBox = page.locator('span[data-testid="expandable-text-box"]').first();
+        
+        // Extract plain text (easier for analysis/searching)
+        const plainText = await jobDescriptionBox.textContent();
+        
+        return {
+            plainText: plainText.trim(),
+        };
+    } catch (error) {
+        console.error('Error extracting job data:', error.message);
+        return {
+            plainText: null,
+            html: null,
+            error: error.message
+        };
+    }
+}
+
 export async function getAppliedJobs(options = {}) {
     const { headless = true } = options;
     
@@ -70,11 +106,6 @@ export async function getAppliedJobs(options = {}) {
         throw new Error(`LinkedIn login verification failed after ${MAX_LOGIN_ATTEMPTS} attempts`);
     }
 
-    if (!loginVerified) {
-        await browser.close();
-        throw new Error(`LinkedIn login verification failed after ${MAX_LOGIN_ATTEMPTS} attempts`);
-    }
-
     try {
         const page = context.pages()[0];
         
@@ -89,6 +120,27 @@ export async function getAppliedJobs(options = {}) {
         console.log('🌐 Filtered to Applied Jobs');
         await page.waitForLoadState('domcontentloaded');
         await randomDelay();
+        const timeLine = '3w'; // ago
+        const appliedElements = await getAllElementJobCard(page, timeLine);
+        console.log(`🔍 Found ${appliedElements.length} applied job(s)`);
+        // Filter and click only those containing '{n}' (weeks)
+        for (const element of appliedElements) {
+            const text = await element.textContent();
+            if (text.includes(timeLine)) {
+                await element.isVisible();
+                // check visibility for now
+                console.log("Visible applied job element:", text);
+                await element.click();
+                await randomDelay(2000, 4000);
+                // Get the data now
+                const jobData = await getJobData(page);
+                console.log("Job data:", jobData);
+                // Go back to previous page
+                await page.goBack();
+                await randomDelay(1000, 2000);
+                continue;
+            }
+        }
 
     } catch (error) {
         console.error('Error during scraping:', error);
