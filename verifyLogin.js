@@ -18,7 +18,7 @@ async function verifyLinkedInLogin() {
         const page = await context.newPage();
         await page.goto('https://www.linkedin.com/jobs/', { timeout: 60000, waitUntil: 'domcontentloaded' });
         
-        // Wait for the specific text that indicates we're on the dashboard
+        // Wait for the specific text that indicates we're on the job dashboard.
         const dashboardText = await page.getByText('My Career Insights');
         const isVisible = await dashboardText.isVisible({ timeout: 20000 });
         
