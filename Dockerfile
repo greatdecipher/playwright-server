@@ -4,17 +4,13 @@ FROM mcr.microsoft.com/playwright:v1.56.1-jammy
 # Set working directory
 WORKDIR /app
 
-# Copy package files first (for caching)
+# Copy package files first (for build cache)
 COPY package*.json ./
 
-# Install npm dependencies
+# Install production dependencies only
 RUN npm install --omit=dev
 
-# --- Install Playwright browsers and dependencies ---
-RUN npx playwright install chromium && \
-    npx playwright install-deps
-
-# Copy the rest of the project files
+# Copy the rest of your project files
 COPY . .
 
 # Expose server port

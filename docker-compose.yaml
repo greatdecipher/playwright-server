@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   playwright-server:
     build: .
@@ -10,6 +8,5 @@ services:
       - NODE_ENV=production
       - PORT=3000
     volumes:
-      # Persist session and state data (e.g. cookies)
       - ./data:/app/data
     restart: unless-stopped

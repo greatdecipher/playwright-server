@@ -6,9 +6,9 @@ import { randomDelay } from './utils/helper.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-async function getAppliedJobs() {
+export async function getAppliedJobs() {
     const browser = await chromium.launch({ 
-        headless: false, // Launch in headed mode
+        headless: true, // Launch in headed mode
         slowMo: 100 // Add 100ms delay between actions
     });
     const context = await browser.newContext({

@@ -1,7 +1,7 @@
 import { chromium } from "playwright";
 
 (async () => {
-  const browser = await chromium.launch({ headless: false }); // visible browser
+  const browser = await chromium.launch({ headless: true }); // visible browser
   const context = await browser.newContext();
   const page = await context.newPage();
 
