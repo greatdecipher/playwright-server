@@ -1,6 +1,10 @@
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
 import { getAppliedJobs } from './getAppliedJobs.js';
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
 app.use(cors());
@@ -33,10 +37,14 @@ app.get('/applied', async (req, res) => {
   try {
     const { timeline } = req.query; // Optional: ?timeline=2w
     
-    console.log(`Starting LinkedIn scraping... (timeline: ${timeline || 'default'})`);
+    // Set headless based on ENVIRONMENT variable
+    const isProduction = process.env.ENVIRONMENT === 'production';
+    const headless = isProduction;
+    
+    console.log(`Starting LinkedIn scraping... (timeline: ${timeline || 'default'}, headless: ${headless}, env: ${process.env.ENVIRONMENT})`);
     
     const jobsData = await getAppliedJobs({ 
-      headless: true,
+      headless,
       timeline 
     });
     

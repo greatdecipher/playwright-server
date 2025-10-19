@@ -4,9 +4,8 @@ services:
     container_name: playwright-server
     ports:
       - "3000:3000"
-    environment:
-      - NODE_ENV=production
-      - PORT=3000
+    env_file:
+      - .env
     volumes:
       - ./data:/app/data
     restart: unless-stopped

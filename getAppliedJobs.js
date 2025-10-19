@@ -4,6 +4,10 @@ import { dirname, join } from 'path';
 import { randomDelay } from './utils/helper.js';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import dotenv from 'dotenv';
+
+// Load environment variables
+dotenv.config();
 
 const execAsync = promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
