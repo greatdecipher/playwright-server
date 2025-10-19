@@ -1,11 +1,12 @@
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { randomDelay } from './utils/helper.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-async function verifyLinkedInLogin() {
+async function getAppliedJobs() {
     const browser = await chromium.launch({ 
         headless: false, // Launch in headed mode
         slowMo: 100 // Add 100ms delay between actions
@@ -27,12 +28,25 @@ async function verifyLinkedInLogin() {
         } else {
             console.log('❌ Could not verify LinkedIn login - Dashboard text not found');
         }
+        const myJobsButton = await page.getByRole('link', { name: 'My jobs' });
+        await myJobsButton.click();
+        console.log('🌐 Navigated to My Jobs page');
+        await page.waitForLoadState('domcontentloaded');
+        await randomDelay();
+        
+        const appliedJobsButton = await page.getByRole('button', { name: 'Applied' });
+        await appliedJobsButton.click();
+        console.log('🌐 Filtered to Applied Jobs');
+        await page.waitForLoadState('domcontentloaded');
+        await randomDelay();
+
+
     } catch (error) {
-        console.error('Error during verification:', error);
+        console.error('Error during scraping:', error);
     } finally {
         await context.close();
         await browser.close();
     }
 }
 
-verifyLinkedInLogin().catch(console.error);
+getAppliedJobs().catch(console.error);
