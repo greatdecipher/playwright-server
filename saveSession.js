@@ -15,7 +15,7 @@ import { chromium } from "playwright";
   await new Promise((resolve) => process.stdin.once("data", resolve));
 
   // Save session state
-  await context.storageState({ path: "linkedin_state.json" });
+  await context.storageState({ path: "data/linkedin_state.json" });
   console.log("✅ Session saved to linkedin_state.json");
 
   await browser.close();
