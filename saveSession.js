@@ -1,10 +1,17 @@
 import { chromium } from "playwright";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
 
 (async () => {
-  // Default to headed mode for manual login, but allow headless via env variable
-  const headless = process.env.HEADLESS === 'true';
+  // Set headless based on ENVIRONMENT variable (same logic as getAppliedJobs)
+  const isProduction = process.env.ENVIRONMENT === 'production';
+  const headless = isProduction;
   
-  const browser = await chromium.launch({ headless }); // visible browser for manual login
+  console.log(`🔧 Running saveSession in ${process.env.ENVIRONMENT || 'development'} mode (headless: ${headless})`);
+  
+  const browser = await chromium.launch({ headless });
   const context = await browser.newContext();
   const page = await context.newPage();
 
